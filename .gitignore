@@ -1,0 +1,21 @@
+# Environment variables — never commit this
+.env
+
+# Bot data — personal farming positions
+tracked_airdrops.json
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.Python
+env/
+venv/
+.venv/
+
+# Logs
+*.log
+
+# OS
+.DS_Store
+Thumbs.db

@@ -1,0 +1,526 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AirdropRadar — Setup Guide</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Syne:wght@400;600;700;800&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --bg: #080c10;
+    --surface: #0e1419;
+    --border: #1a2430;
+    --accent: #00e5ff;
+    --accent2: #7fff6e;
+    --warn: #ffb830;
+    --text: #c8d8e8;
+    --muted: #4a6070;
+    --glow: 0 0 24px rgba(0,229,255,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Syne', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── GRID NOISE BACKGROUND ── */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(0,229,255,0.03) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(0,229,255,0.03) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrap {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  /* ── HEADER ── */
+  .header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 56px;
+    gap: 16px;
+  }
+
+  .logo-block {}
+
+  .logo-tag {
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent);
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+    opacity: 0.8;
+  }
+
+  .logo {
+    font-size: 42px;
+    font-weight: 800;
+    line-height: 1;
+    letter-spacing: -1px;
+    color: #fff;
+  }
+
+  .logo span {
+    color: var(--accent);
+    text-shadow: 0 0 30px rgba(0,229,255,0.6);
+  }
+
+  .status-pill {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(127,255,110,0.08);
+    border: 1px solid rgba(127,255,110,0.25);
+    border-radius: 100px;
+    padding: 8px 16px;
+    font-family: 'Space Mono', monospace;
+    font-size: 11px;
+    color: var(--accent2);
+    white-space: nowrap;
+    margin-top: 8px;
+  }
+
+  .dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--accent2);
+    box-shadow: 0 0 8px var(--accent2);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  /* ── SUBTITLE ── */
+  .subtitle {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.6;
+    max-width: 520px;
+    margin-bottom: 48px;
+    margin-top: -32px;
+  }
+
+  /* ── SECTION LABEL ── */
+  .section-label {
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--accent);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    opacity: 0.7;
+  }
+
+  /* ── FEATURES GRID ── */
+  .features {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-bottom: 48px;
+  }
+
+  @media (max-width: 580px) { .features { grid-template-columns: 1fr; } }
+
+  .feat {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .feat::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0;
+    width: 3px; height: 100%;
+    background: var(--accent);
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .feat:hover { border-color: rgba(0,229,255,0.3); box-shadow: var(--glow); }
+  .feat:hover::before { opacity: 1; }
+
+  .feat-icon { font-size: 22px; margin-bottom: 10px; }
+  .feat-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .feat-desc { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+  /* ── COMMANDS TABLE ── */
+  .commands {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 48px;
+  }
+
+  .cmd-row {
+    display: grid;
+    grid-template-columns: 180px 1fr;
+    gap: 0;
+    border-bottom: 1px solid var(--border);
+    align-items: center;
+  }
+
+  .cmd-row:last-child { border-bottom: none; }
+
+  .cmd-name {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: var(--accent);
+    padding: 14px 20px;
+    border-right: 1px solid var(--border);
+    background: rgba(0,229,255,0.03);
+  }
+
+  .cmd-desc {
+    font-size: 13px;
+    color: var(--muted);
+    padding: 14px 20px;
+  }
+
+  /* ── SETUP STEPS ── */
+  .steps { margin-bottom: 48px; }
+
+  .step {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 16px;
+    margin-bottom: 20px;
+    align-items: start;
+  }
+
+  .step-num {
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    border: 1px solid var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Space Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    flex-shrink: 0;
+    box-shadow: 0 0 16px rgba(0,229,255,0.15);
+  }
+
+  .step-content {}
+  .step-title { font-size: 14px; font-weight: 700; color: #fff; margin-bottom: 6px; }
+  .step-body { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  .step-body a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid rgba(0,229,255,0.3);
+    transition: border-color 0.2s;
+  }
+  .step-body a:hover { border-color: var(--accent); }
+
+  /* ── CODE BLOCK ── */
+  .code-block {
+    background: #050810;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin: 10px 0;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .code-block pre {
+    font-family: 'Space Mono', monospace;
+    font-size: 12px;
+    color: #8de3b5;
+    line-height: 1.8;
+    white-space: pre-wrap;
+    word-break: break-all;
+  }
+
+  .code-block .comment { color: var(--muted); }
+  .code-block .cmd { color: var(--accent2); }
+  .code-block .val { color: var(--warn); }
+
+  .copy-btn {
+    position: absolute;
+    top: 10px; right: 10px;
+    background: rgba(0,229,255,0.1);
+    border: 1px solid rgba(0,229,255,0.2);
+    border-radius: 6px;
+    padding: 4px 10px;
+    font-family: 'Space Mono', monospace;
+    font-size: 10px;
+    color: var(--accent);
+    cursor: pointer;
+    transition: background 0.2s;
+  }
+
+  .copy-btn:hover { background: rgba(0,229,255,0.2); }
+
+  /* ── SOURCES GRID ── */
+  .sources {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 48px;
+  }
+
+  .source-tag {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--text);
+    transition: border-color 0.2s;
+  }
+
+  .source-tag:hover { border-color: rgba(0,229,255,0.4); }
+  .source-tag .dot2 { width: 6px; height: 6px; border-radius: 50%; background: var(--accent2); }
+
+  /* ── FOOTER ── */
+  .footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .footer-left { font-family: 'Space Mono', monospace; font-size: 11px; color: var(--muted); }
+  .footer-right { font-size: 12px; color: var(--muted); }
+
+  /* ── ANIMATE IN ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .wrap > * {
+    animation: fadeUp 0.5s ease both;
+  }
+
+  .wrap > *:nth-child(1) { animation-delay: 0.05s; }
+  .wrap > *:nth-child(2) { animation-delay: 0.1s; }
+  .wrap > *:nth-child(3) { animation-delay: 0.15s; }
+  .wrap > *:nth-child(4) { animation-delay: 0.2s; }
+  .wrap > *:nth-child(5) { animation-delay: 0.25s; }
+  .wrap > *:nth-child(6) { animation-delay: 0.3s; }
+  .wrap > *:nth-child(7) { animation-delay: 0.35s; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="logo-block">
+      <div class="logo-tag">// crypto intelligence</div>
+      <div class="logo">Airdrop<span>Radar</span></div>
+    </div>
+    <div class="status-pill">
+      <div class="dot"></div>
+      READY TO DEPLOY
+    </div>
+  </div>
+
+  <p class="subtitle">
+    Your personal Telegram bot that monitors testnets, tracks airdrop positions, 
+    and delivers 8AM intelligence briefings — powered by Claude AI with live web search.
+  </p>
+
+  <!-- FEATURES -->
+  <div class="section-label">// capabilities</div>
+  <div class="features">
+    <div class="feat">
+      <div class="feat-icon">🧪</div>
+      <div class="feat-title">Testnet Discovery</div>
+      <div class="feat-desc">Finds active testnet campaigns with tasks, deadlines, and estimated airdrop value — updated in real time.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">📋</div>
+      <div class="feat-title">Position Tracking</div>
+      <div class="feat-desc">Track any project you're farming. Get instant news, snapshot alerts, and distribution updates for your list.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">☀️</div>
+      <div class="feat-title">Daily 8AM Digest</div>
+      <div class="feat-desc">Every morning: urgent tasks, new funding rounds, key airdrop news, and one new high-potential opportunity.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">💰</div>
+      <div class="feat-title">Funding Radar</div>
+      <div class="feat-desc">Spots new VC-backed projects before they launch. Early positioning = bigger allocations.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔍</div>
+      <div class="feat-title">Free-form Research</div>
+      <div class="feat-desc">Ask anything — "is zkSync worth farming?" or "what tasks do I need for Monad testnet?" — and get live answers.</div>
+    </div>
+    <div class="feat">
+      <div class="feat-icon">🔒</div>
+      <div class="feat-title">Private to You</div>
+      <div class="feat-desc">Bot only responds to your Telegram user ID. Zero exposure to other users.</div>
+    </div>
+  </div>
+
+  <!-- DATA SOURCES -->
+  <div class="section-label">// monitored sources</div>
+  <div class="sources">
+    <div class="source-tag"><span class="dot2"></span> CryptoRank</div>
+    <div class="source-tag"><span class="dot2"></span> ICODrops</div>
+    <div class="source-tag"><span class="dot2"></span> ICOAnalytics</div>
+    <div class="source-tag"><span class="dot2"></span> Twitter / X</div>
+    <div class="source-tag"><span class="dot2"></span> Discord</div>
+    <div class="source-tag"><span class="dot2"></span> GitHub</div>
+    <div class="source-tag"><span class="dot2"></span> Live Web Search</div>
+  </div>
+
+  <!-- BOT COMMANDS -->
+  <div class="section-label">// bot commands</div>
+  <div class="commands">
+    <div class="cmd-row">
+      <div class="cmd-name">/start</div>
+      <div class="cmd-desc">Open the main menu with quick-action buttons</div>
+    </div>
+    <div class="cmd-row">
+      <div class="cmd-name">/track [name]</div>
+      <div class="cmd-desc">Add a project to your watchlist & get an instant intel brief</div>
+    </div>
+    <div class="cmd-row">
+      <div class="cmd-name">/untrack [name]</div>
+      <div class="cmd-desc">Remove a project from your tracking list</div>
+    </div>
+    <div class="cmd-row">
+      <div class="cmd-name">/list</div>
+      <div class="cmd-desc">View all projects you're currently tracking</div>
+    </div>
+    <div class="cmd-row">
+      <div class="cmd-name">Any message</div>
+      <div class="cmd-desc">Ask anything — Claude searches the web and answers in real time</div>
+    </div>
+  </div>
+
+  <!-- SETUP STEPS -->
+  <div class="section-label">// setup guide</div>
+  <div class="steps">
+
+    <div class="step">
+      <div class="step-num">01</div>
+      <div class="step-content">
+        <div class="step-title">Create your Telegram Bot</div>
+        <div class="step-body">
+          Open Telegram and message <a href="https://t.me/BotFather" target="_blank">@BotFather</a>. 
+          Send <code>/newbot</code>, give it a name, and copy the <strong>bot token</strong> you receive.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">02</div>
+      <div class="step-content">
+        <div class="step-title">Get your Telegram User ID</div>
+        <div class="step-body">
+          Message <a href="https://t.me/userinfobot" target="_blank">@userinfobot</a> on Telegram — 
+          it will reply with your numeric user ID. Save this.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">03</div>
+      <div class="step-content">
+        <div class="step-title">Get your Anthropic API Key</div>
+        <div class="step-body">
+          Visit <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a>, 
+          create an account if needed, and generate an API key. The bot uses Claude Sonnet with web search.
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">04</div>
+      <div class="step-content">
+        <div class="step-title">Install & configure</div>
+        <div class="step-body">
+          <div class="code-block">
+            <button class="copy-btn" onclick="copyCode(this)">copy</button>
+            <pre><span class="comment"># Clone / create your project folder</span>
+<span class="cmd">mkdir</span> airdrop-radar && <span class="cmd">cd</span> airdrop-radar
+
+<span class="comment"># Install dependencies</span>
+<span class="cmd">pip install</span> -r requirements.txt
+
+<span class="comment"># Set your environment variables</span>
+<span class="cmd">export</span> TELEGRAM_BOT_TOKEN=<span class="val">"your_token_here"</span>
+<span class="cmd">export</span> TELEGRAM_USER_ID=<span class="val">"your_user_id_here"</span>
+<span class="cmd">export</span> ANTHROPIC_API_KEY=<span class="val">"your_api_key_here"</span>
+
+<span class="comment"># Run the bot</span>
+<span class="cmd">python</span> bot.py</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-num">05</div>
+      <div class="step-content">
+        <div class="step-title">Keep it running 24/7 (optional but recommended)</div>
+        <div class="step-body">
+          Use a cheap VPS (Hetzner CX11 ~€4/mo, or a free Oracle Cloud instance). 
+          Run with <code>pm2 start bot.py --interpreter python3</code> or use <code>systemd</code> to keep it alive permanently. 
+          The 8AM digest uses your server's timezone — set it with <code>timedatectl set-timezone Africa/Lagos</code> (or your zone).
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-left">AIRDROP_RADAR // v1.0.0</div>
+    <div class="footer-right">Powered by Claude Sonnet + Telegram Bot API</div>
+  </div>
+
+</div>
+
+<script>
+  function copyCode(btn) {
+    const pre = btn.nextElementSibling;
+    navigator.clipboard.writeText(pre.innerText).then(() => {
+      btn.textContent = 'copied!';
+      setTimeout(() => btn.textContent = 'copy', 2000);
+    });
+  }
+</script>
+</body>
+</html>
