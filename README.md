@@ -179,4 +179,4 @@ MIT License — free to use, modify, and distribute.
 
 ---
 
-Built by [@sir-oh](https://github.com/sir-oh)
+Built by [@_theadeyemi](https://github.com/AdeyemiOyerinde)
